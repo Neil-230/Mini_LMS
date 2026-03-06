@@ -6,6 +6,7 @@
     <title>@yield('title') - Library Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -13,32 +14,88 @@
             --success-color: #27ae60;
             --danger-color: #e74c3c;
             --warning-color: #f39c12;
+            --info-color: #17a2b8;
+
+            /* map to Bootstrap CSS variables so views that use --bs-* work */
+            --bs-primary: var(--primary-color);
+            --bs-secondary: var(--secondary-color);
+            --bs-success: var(--success-color);
+            --bs-danger: var(--danger-color);
+            --bs-warning: var(--warning-color);
+            --bs-info: var(--info-color);
         }
 
         body {
             background-color: #ecf0f1;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
         }
 
+        /* --- MODIFIED NAVBAR STYLES --- */
         .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 15px 20px;
+            transition: all 0.3s ease;
         }
 
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.5rem;
-            color: white !important;
+            font-size: 1.4rem;
+            color: var(--primary-color) !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .nav-link {
-            color: rgba(255,255,255,0.8) !important;
-            transition: color 0.3s;
+            color: var(--primary-color) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            transition: all 0.3s;
+            position: relative;
         }
 
         .nav-link:hover {
-            color: white !important;
+            color: var(--secondary-color) !important;
         }
+
+        /* Underline effect on hover */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--secondary-color);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            color: var(--primary-color);
+            padding: 10px 20px;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* --- END MODIFIED NAVBAR --- */
 
         .sidebar {
             background: white;
@@ -191,8 +248,8 @@
     @yield('styles')
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <!-- Navigation (Floating Card Style) -->
+    <nav class="navbar navbar-expand-lg navbar-light m-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
                 <i class="fas fa-book"></i> Library Management
@@ -222,7 +279,7 @@
                     <li class="nav-item">
                         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                             @csrf
-                            <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; cursor: pointer;">
+                            <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; cursor: pointer; color: var(--danger-color) !important;">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </button>
                         </form>
@@ -233,7 +290,7 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container-fluid py-5">
+    <div class="container-fluid ">
         <!-- Alerts -->
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -267,7 +324,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p class="mb-0">&copy; 2026 Library Management System - IT1313 LMS</p>
+        <p class="mb-none">&copy; 2026 Library Management System - IT1313 LMS</p>
     </footer>
 
     <!-- Scripts -->
