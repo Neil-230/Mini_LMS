@@ -29,13 +29,13 @@ A modern Library Management System built with Laravel 12 and Tailwind CSS v4. Th
 ## 📸 Screenshots
 
 ### Dashboard
-![Dashboard](sample_shot.png)
+![Dashboard](public/dashboard_shot.png)
 
 ### Book Management
-![Books](sample_shot.png)
+![Books](public/books_shot.png)
 
 ### Student Management  
-![Students](sample_shot.png)
+![Students](public/students_shot.png)
 
 ## 🚀 Getting Started
 
