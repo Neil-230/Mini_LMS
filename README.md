@@ -35,7 +35,7 @@ A modern Library Management System built with Laravel 12 and Tailwind CSS v4. Th
 ![Books](public/books_shot.png)
 
 ### Student Management  
-![Students](public/students_shot.png)
+![Students](public/student_shot.png)
 
 ## 🚀 Getting Started
 
