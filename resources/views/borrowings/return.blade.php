@@ -422,13 +422,16 @@
                 return;
             }
 
-            const overdueDays = Math.floor((returnDate - dueDate) / (1000 * 60 * 60 * 24));
-            const fineAmount = 10 * overdueDays * returnQuantity;
+            let overdueDays = Math.ceil((returnDate - dueDate) / (1000 * 60 * 60 * 24));
+            if (overdueDays <= 0 && returnDate > dueDate) overdueDays = 1;
+            
+            const totalQuantity = {{ $borrowing->quantity }};
+            const fineAmount = 10 * overdueDays * totalQuantity;
 
             document.getElementById('finePreview').innerHTML = `
                 <span class="text-danger">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    ₱${fineAmount.toFixed(2)} (₱10 × ${overdueDays} days × ${returnQuantity} book${returnQuantity > 1 ? 's' : ''})
+                    ₱${fineAmount.toFixed(2)} (₱10 × ${overdueDays} day${overdueDays > 1 ? 's' : ''} × ${totalQuantity} book${totalQuantity > 1 ? 's' : ''})
                 </span>
             `;
         }

@@ -51,21 +51,31 @@ class Borrowing extends Model
      */
     public function calculateFine(): float
     {
-        // If already returned, calculate based on return date
-        if ($this->return_date) {
-            $overdueBooks = max(0, $this->quantity - $this->returned_quantity);
-            if ($this->return_date->gt($this->due_date)) {
-                $overdueDays = $this->due_date->diffInDays($this->return_date);
-                return 10 * $overdueDays * $overdueBooks;
+        $now = Carbon::now();
+        $unreturnedBooks = $this->quantity - $this->returned_quantity;
+
+        if ($unreturnedBooks <= 0 && $this->status === 'returned') {
+            return $this->fine_amount; // Return the saved fine amount if already fully returned
+        }
+
+        // If already returned at some point (even partially)
+        if ($this->return_date && $this->return_date->gt($this->due_date)) {
+            $overdueDays = ceil($this->due_date->diffInHours($this->return_date) / 24);
+            if ($overdueDays == 0) $overdueDays = 1;
+            
+            // If it's a non-returned status, it's currently being calculated live
+            if ($this->status !== 'returned') {
+                $overdueDaysLive = ceil($this->due_date->diffInHours($now) / 24);
+                if ($overdueDaysLive == 0) $overdueDaysLive = 1;
+                return 10 * $overdueDaysLive * $unreturnedBooks;
             }
-            return 0;
         }
 
         // If not returned, calculate based on today's date
-        $overdueBooks = max(0, $this->quantity - $this->returned_quantity);
-        if (Carbon::now()->gt($this->due_date)) {
-            $overdueDays = $this->due_date->diffInDays(Carbon::now());
-            return 10 * $overdueDays * $overdueBooks;
+        if ($unreturnedBooks > 0 && $now->gt($this->due_date)) {
+            $overdueDays = ceil($this->due_date->diffInHours($now) / 24);
+            if ($overdueDays == 0) $overdueDays = 1;
+            return 10 * $overdueDays * $unreturnedBooks;
         }
 
         return 0;

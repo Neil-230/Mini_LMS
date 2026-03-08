@@ -107,8 +107,10 @@ class BorrowingController extends Controller
         // Calculate fine
         $returnDate = Carbon::parse($validated['return_date']);
         if ($returnDate->gt($borrowing->due_date)) {
-            $overdueDays = $borrowing->due_date->diffInDays($returnDate);
-            $borrowing->fine_amount = 10 * $overdueDays * $validated['return_quantity'];
+            $overdueDays = ceil($borrowing->due_date->diffInHours($returnDate) / 24);
+            if ($overdueDays == 0) $overdueDays = 1;
+            // Accumulate fine for the quantity being returned late
+            $borrowing->fine_amount += 10 * $overdueDays * $validated['return_quantity'];
         }
 
         // Update status
