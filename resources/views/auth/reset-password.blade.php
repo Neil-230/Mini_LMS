@@ -22,7 +22,6 @@
 
     /* Background Animation */
     .login-bg {
-        /* background: var(--primary-gradient); */
         min-height: 100vh;
         position: relative;
         overflow: hidden;
@@ -97,32 +96,6 @@
         box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
         color: white;
     }
-
-    /* Demo Box */
-    .demo-box {
-        background: rgba(255, 255, 255, 0.56);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
-        padding: 1rem;
-        color: black;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        margin-top: 1.5rem;
-    }
-    
-    .demo-box code {
-        background: rgba(0, 0, 0, 0.2);
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: monospace;
-        color: #fff;
-    }
-
-    /* Validation Errors */
-    .invalid-feedback {
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
-    }
 </style>
 
 <div class="login-bg d-flex align-items-center justify-content-center py-5">
@@ -135,22 +108,13 @@
                     <!-- Logo / Header -->
                     <div class="text-center mb-4">
                         <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" style="width: 70px; height: 70px;">
-                            <i class="fas fa-book-reader text-primary fa-2x"></i>
+                            <i class="fas fa-user-shield text-primary fa-2x"></i>
                         </div>
-                        <h2 class="fw-bold mb-1">Welcome Back</h2>
-                        <p class="text-muted small">Sign in to access the Library System</p>
+                        <h2 class="fw-bold mb-1">Reset Password</h2>
+                        <p class="text-muted small">Please choose a secure new password for your account.</p>
                     </div>
 
-                    <!-- Session Status -->
-                    @if (session('status'))
-                        <div class="alert alert-success shadow-sm border-0 mb-4" role="alert">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <div class="small">{{ session('status') }}</div>
-                            </div>
-                        </div>
-                    @endif
-
+                    <!-- Validation Errors -->
                     @if ($errors->any())
                         <div class="alert alert-danger shadow-sm border-0 mb-4" role="alert">
                             <div class="d-flex align-items-center">
@@ -164,8 +128,11 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login.store') }}">
+                    <form method="POST" action="{{ route('password.store') }}">
                         @csrf
+
+                        <!-- Password Reset Token -->
+                        <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
                         <!-- Email Address -->
                         <div class="mb-3">
@@ -173,7 +140,7 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                 <input id="email" class="form-control @error('email') is-invalid @enderror" 
-                                       type="email" name="email" value="{{ old('email') }}" 
+                                       type="email" name="email" value="{{ old('email', $request->email) }}" 
                                        required autofocus autocomplete="username" placeholder="name@example.com">
                             </div>
                             @error('email')
@@ -183,11 +150,11 @@
 
                         <!-- Password -->
                         <div class="mb-3">
-                            <label for="password" class="form-label fw-bold small text-uppercase text-muted">Password</label>
+                            <label for="password" class="form-label fw-bold small text-uppercase text-muted">New Password</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                 <input id="password" class="form-control @error('password') is-invalid @enderror"
-                                       type="password" name="password" required autocomplete="current-password" 
+                                       type="password" name="password" required autocomplete="new-password" 
                                        placeholder="••••••••">
                             </div>
                             @error('password')
@@ -195,50 +162,25 @@
                             @enderror
                         </div>
 
-                        <!-- Remember Me & Forgot Password -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check">
-                                <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
-                                <label class="form-check-label small text-muted" for="remember_me">
-                                    Remember me
-                                </label>
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <label for="password_confirmation" class="form-label fw-bold small text-uppercase text-muted">Confirm New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-check-double"></i></span>
+                                <input id="password_confirmation" class="form-control"
+                                       type="password" name="password_confirmation" required autocomplete="new-password" 
+                                       placeholder="••••••••">
                             </div>
-                            <a href="{{ route('password.request') }}" class="small text-decoration-none text-primary fw-bold">
-                                Forgot Password?
-                            </a>
                         </div>
 
-                        <!-- Login Button -->
+                        <!-- Reset Button -->
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary btn-login text-white shadow">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                                <i class="fas fa-save me-2"></i> Update Password
                             </button>
-                        </div>
-
-                        <!-- Register Link -->
-                        <div class="text-center mt-4">
-                            <p class="text-muted small">Don't have an account? 
-                                <a href="{{ route('register') }}" class="text-decoration-none fw-bold text-primary">
-                                    Register here
-                                </a>
-                            </p>
                         </div>
                     </form>
                 </div>
-
-                <!-- Demo Credentials (Visible only if not logged in, styled nicely) -->
-                <div class="demo-box text-center">
-                    <div class="small fw-bold mb-2"><i class="fas fa-key me-1"></i> Demo Access</div>
-                    <div class="d-flex justify-content-between align-items-center small">
-                        <span>Email:</span>
-                        <code>librarian@librarysystem.local</code>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center small mt-1">
-                        <span>Password:</span>
-                        <code>password123</code>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
