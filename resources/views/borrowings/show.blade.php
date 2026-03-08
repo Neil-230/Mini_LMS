@@ -177,23 +177,6 @@
         line-height: 1;
     }
 
-    .fine-calculation {
-        background: #fff5f5;
-        border: 1px solid #fed7d7;
-        border-radius: 12px;
-        padding: 20px;
-    }
-
-    .fine-calculation ul {
-        margin: 0;
-        padding-left: 20px;
-    }
-
-    .fine-calculation li {
-        margin-bottom: 5px;
-        color: #7f8c8d;
-    }
-
     /* Badges */
     .badge {
         padding: 6px 12px;
@@ -236,6 +219,8 @@
         border: none;
         box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
         transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
     }
 
     .btn-return:hover {
@@ -248,16 +233,6 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-    }
-
-    /* Alert */
-    .alert-info {
-        background-color: rgba(23, 162, 184, 0.1);
-        border: 1px solid rgba(23, 162, 184, 0.2);
-        color: var(--info-color);
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
     }
 </style>
 
@@ -294,8 +269,8 @@
         </div>
     </div>
 
-    <!-- Student & Book Info -->
-    <div class="row g-4 mb-4">
+    <div class="row g-4">
+        <!-- Student Information -->
         <div class="col-md-6">
             <div class="info-card">
                 <div class="info-header">
@@ -310,4 +285,110 @@
                             </a>
                         </div>
                     </div>
-                    <div class="info-item
+                    <div class="info-item">
+                        <div class="info-label">Student ID</div>
+                        <div class="info-value">{{ $borrowing->student->student_id }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ $borrowing->student->email }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Book Information -->
+        <div class="col-md-6">
+            <div class="info-card">
+                <div class="info-header">
+                    <h5><i class="fas fa-book me-2"></i> Book Information</h5>
+                </div>
+                <div class="info-body">
+                    <div class="info-item">
+                        <div class="info-label">Title</div>
+                        <div class="info-value">
+                            <a href="{{ route('books.show', $borrowing->book) }}">
+                                {{ $borrowing->book->title }}
+                            </a>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">ISBN</div>
+                        <div class="info-value">{{ $borrowing->book->isbn }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Quantity Borrowed</div>
+                        <div class="info-value">{{ $borrowing->quantity }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Details -->
+        <div class="col-md-12">
+            <div class="info-card">
+                <div class="info-header">
+                    <h5><i class="fas fa-exchange-alt me-2"></i> Transaction Details</h5>
+                </div>
+                <div class="info-body">
+                    <div class="transaction-grid mb-4">
+                        <div class="transaction-item">
+                            <div class="transaction-label">Borrow Date</div>
+                            <div class="transaction-value">{{ $borrowing->borrow_date->format('M d, Y') }}</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-label">Due Date</div>
+                            <div class="transaction-value text-primary">{{ $borrowing->due_date->format('M d, Y') }}</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-label">Return Date</div>
+                            <div class="transaction-value">
+                                {{ $borrowing->return_date ? $borrowing->return_date->format('M d, Y') : 'Not yet returned' }}
+                            </div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-label">Status</div>
+                            <div class="transaction-value">
+                                @if($borrowing->status === 'borrowed')
+                                    <span class="badge badge-primary">Borrowed</span>
+                                @elseif($borrowing->status === 'partially_returned')
+                                    <span class="badge badge-warning">Partially Returned</span>
+                                @else
+                                    <span class="badge badge-success">Returned</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    @php
+                        $fine = $borrowing->calculateFine();
+                    @endphp
+
+                    @if($fine > 0)
+                        <div class="fine-card">
+                            <div class="fine-header">
+                                <h5><i class="fas fa-exclamation-triangle me-2"></i> Overdue Fine</h5>
+                            </div>
+                            <div class="fine-body text-center">
+                                <div class="fine-label mb-2 text-muted uppercase">Amount Due</div>
+                                <div class="fine-amount mb-3">₱{{ number_format($fine, 2) }}</div>
+                                <div class="text-muted small">
+                                    Calculated at ₱10.00 per day per book for late returns.
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-info d-flex align-items-center mb-0">
+                            <i class="fas fa-check-circle me-3 fa-2x"></i>
+                            <div>
+                                <h6 class="mb-0 fw-bold">No Overdue Fines</h6>
+                                <p class="mb-0 small">This transaction is currently in good standing.</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
